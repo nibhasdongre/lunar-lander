@@ -1,0 +1,8 @@
+itertools
+numpy
+torch==2.6
+unrealcv
+tensorflow==2.10
+gym
+wrappers
+flask
