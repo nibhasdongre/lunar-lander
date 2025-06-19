@@ -74,7 +74,7 @@ for n_step in range(Config.number_of_steps):
         # Print a summary at the end of the episode
         print(f"=== Episode {episode} ended at step {n_step} ===")
         print(f"    Total Reward: {agent.episode_reward:.2f}")
-        print(f"    Episode Length: {env.episode_step_count}\n")
+        print(f"    Episode Length: {env.unwrapped.episode_step_count}\n")
 
         # Log results and reset
         agent.record_results(n_step, writer, env)
