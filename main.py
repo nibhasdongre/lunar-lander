@@ -45,8 +45,16 @@ for n_step in range(Config.number_of_steps):
     actions = agent.get_action(state, n_step, env)
 
     # Perform a step in the environment
-    new_state, reward, terminated, truncated, info = env.step(actions)
-    done = terminated or truncated
+    ####
+    step_result = env.step(action)
+    if len(step_result) == 5:
+        obs, reward, terminated, truncated, info = step_result
+        done = terminated or truncated
+    else:
+        obs, reward, done, info = step_result
+####
+    #new_state, reward, terminated, truncated, info = env.step(actions)
+   # done = terminated or truncated
 
     # Accumulate reward for this episode
     agent.episode_reward += reward
