@@ -48,10 +48,10 @@ for n_step in range(Config.number_of_steps):
     ####
     step_result = env.step(actions)
     if len(step_result) == 5:
-        obs, reward, terminated, truncated, info = step_result
+        new_state, reward, terminated, truncated, info = step_result
         done = terminated or truncated
     else:
-        obs, reward, done, info = step_result
+        new_state, reward, done, info = step_result
 ####
     #new_state, reward, terminated, truncated, info = env.step(actions)
    # done = terminated or truncated
