@@ -210,49 +210,49 @@ class UnrealLunarLanderEnv(gym.Env):
 
 
     def reset(self):
-        def reset(self, *, seed=None, options=None):
-    super().reset(seed=seed)
-    while not self.data_from_unreal.empty(): self.data_from_unreal.get_nowait()
-    while not self.action_for_unreal.empty(): self.action_for_unreal.get_nowait()
-    self.episode_step_count = 0
-
-    if self.launch_unreal and (not self.unreal_process or self.unreal_process.poll() is not None):
-        self._launch_unreal_engine()
-        if not self.unreal_process:
-            return np.zeros(self.observation_space.shape, dtype=np.float32), {}
-
-    reset_command = {"command": "reset"}
-    try:
-        self.action_for_unreal.put(reset_command, timeout=2.0)
-    except queue.Full:
-        return np.zeros(self.observation_space.shape, dtype=np.float32), {}
-
-    print("Gym env: RESET. Waiting for UE to send a 'start' signal...")
-    is_ready = False
-    initial_state_from_ue = None
-    timeout_duration = 120.0
-
-    while not is_ready:
+        
+        super().reset(seed=seed)
+        while not self.data_from_unreal.empty(): self.data_from_unreal.get_nowait()
+        while not self.action_for_unreal.empty(): self.action_for_unreal.get_nowait()
+        self.episode_step_count = 0
+    
+        if self.launch_unreal and (not self.unreal_process or self.unreal_process.poll() is not None):
+            self._launch_unreal_engine()
+            if not self.unreal_process:
+                return np.zeros(self.observation_space.shape, dtype=np.float32), {}
+    
+        reset_command = {"command": "reset"}
         try:
-            ue_data = self.data_from_unreal.get(timeout=timeout_duration)
-            if ue_data.get("start") is True and "state" in ue_data:
-                self.action_for_unreal.put({"command": "start_confirmed"})
-                is_ready = True
-                initial_state_from_ue = np.array(ue_data["state"], dtype=np.float32)
-                print("Gym env: 'start' signal received. Starting episode.")
-            else:
-                self.action_for_unreal.put({"command": "dummy"})
-        except queue.Empty:
-            print(f"Timeout ({timeout_duration}s): No start signal. Initiating hard reset...")
-            self.close()
-            return self.reset(seed=seed, options=options)
-        except Exception as e:
-            print(f"[Env Reset Error] Handshake error: {e}. Initiating hard reset...")
-            self.close()
-            return self.reset(seed=seed, options=options)
-
-    self.current_state = initial_state_from_ue
-    return self.current_state, {}
+            self.action_for_unreal.put(reset_command, timeout=2.0)
+        except queue.Full:
+            return np.zeros(self.observation_space.shape, dtype=np.float32), {}
+    
+        print("Gym env: RESET. Waiting for UE to send a 'start' signal...")
+        is_ready = False
+        initial_state_from_ue = None
+        timeout_duration = 120.0
+    
+        while not is_ready:
+            try:
+                ue_data = self.data_from_unreal.get(timeout=timeout_duration)
+                if ue_data.get("start") is True and "state" in ue_data:
+                    self.action_for_unreal.put({"command": "start_confirmed"})
+                    is_ready = True
+                    initial_state_from_ue = np.array(ue_data["state"], dtype=np.float32)
+                    print("Gym env: 'start' signal received. Starting episode.")
+                else:
+                    self.action_for_unreal.put({"command": "dummy"})
+            except queue.Empty:
+                print(f"Timeout ({timeout_duration}s): No start signal. Initiating hard reset...")
+                self.close()
+                return self.reset(seed=seed, options=options)
+            except Exception as e:
+                print(f"[Env Reset Error] Handshake error: {e}. Initiating hard reset...")
+                self.close()
+                return self.reset(seed=seed, options=options)
+    
+        self.current_state = initial_state_from_ue
+        return self.current_state, {}
 
         ##########
 
