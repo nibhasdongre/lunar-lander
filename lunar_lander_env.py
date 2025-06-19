@@ -256,27 +256,34 @@ class UnrealLunarLanderEnv(gym.Env):
         return self.current_state, {}
 
     def step(self, action_payload):
-        self.episode_step_count += 1
-        action_list = [float(a) for a in action_payload]
-        step_command = {"command": "step", "action": action_list}
+        ##########
+        def step(self, action_payload):
+    self.episode_step_count += 1
+    action_list = [float(a) for a in action_payload]
+    step_command = {"command": "step", "action": action_list}
 
-        try:
-            self.action_for_unreal.put(step_command, timeout=2.0)
-        except queue.Full:
-            reward, _, info = self._calculate_reward_and_done(self.current_state)
-            return self.current_state, reward - 50, True, False, {"error": "Action queue full", **info}
-            
-        try:
-            ue_data = self.data_from_unreal.get(timeout=30.0)
-            new_state_from_ue = np.array(ue_data["state"], dtype=np.float32)
-            
-            reward, done, info = self._calculate_reward_and_done(new_state_from_ue)
-            self.current_state = new_state_from_ue
-            truncated = info.get('status') == 'max_steps_reached'
-            return self.current_state, reward, done, truncated, info
-        except Exception:
-            reward, _, info = self._calculate_reward_and_done(self.current_state)
-            return self.current_state, reward - 50, True, False, {"error": "UE response timeout or bad data", **info}
+    try:
+        self.action_for_unreal.put(step_command, timeout=2.0)
+    except queue.Full:
+        reward, _, info = self._calculate_reward_and_done(self.current_state)
+        return self.current_state, reward - 50, True, False, {"error": "Action queue full", **info}
+        
+    try:
+        ue_data = self.data_from_unreal.get(timeout=30.0)
+        new_state_from_ue = np.array(ue_data["state"], dtype=np.float32)
+
+        reward, is_terminal, info = self._calculate_reward_and_done(new_state_from_ue)
+        self.current_state = new_state_from_ue
+        truncated = info.get('status') == 'max_steps_reached'
+        terminated = is_terminal and not truncated
+
+        return self.current_state, reward, terminated, truncated, info
+
+    except Exception:
+        reward, _, info = self._calculate_reward_and_done(self.current_state)
+        return self.current_state, reward - 50, True, False, {"error": "UE response timeout or bad data", **info}
+
+        ##########
 
     def render(self, mode='human'):
         pass
