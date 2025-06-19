@@ -9,6 +9,9 @@ from gymnasium.wrappers import NormalizeObservation
 # --- The path to your Unreal Engine executable ---
 YOUR_UNREAL_EXE_PATH = r"C:\Users\ADMIN\Desktop\lunar_lander\lunar_lander.exe"
 
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+warnings.filterwarnings("ignore", category=FutureWarning)
 # --------------------------------------------------- Initialization ---------------------------------------------------
 # Create Unreal Engine environment and add wrappers
 env = UnrealLunarLanderEnv(
@@ -45,16 +48,9 @@ for n_step in range(Config.number_of_steps):
     actions = agent.get_action(state, n_step, env)
 
     # Perform a step in the environment
-    ####
-    step_result = env.step(actions)
-    if len(step_result) == 5:
-        new_state, reward, terminated, truncated, info = step_result
-        done = terminated or truncated
-    else:
-        new_state, reward, done, info = step_result
-####
-    #new_state, reward, terminated, truncated, info = env.step(actions)
-   # done = terminated or truncated
+   
+    new_state, reward, terminated, truncated, info = env.step(actions)
+    done = terminated or truncated
 
     # Accumulate reward for this episode
     agent.episode_reward += reward
