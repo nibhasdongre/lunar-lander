@@ -4,7 +4,7 @@ import Config
 from Agent import Agent
 from TestProcess import TestProcess
 from lunar_lander_env import UnrealLunarLanderEnv
-from wrappers import NormalizeObservation
+from gymnasium.wrappers import NormalizeObservation
 
 # --- The path to your Unreal Engine executable ---
 YOUR_UNREAL_EXE_PATH = r"C:\Users\ADMIN\Desktop\lunar_lander\lunar_lander.exe"
