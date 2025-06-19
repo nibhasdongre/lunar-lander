@@ -4,7 +4,7 @@ import torch
 import gym
 import numpy as np
 from lunar_lander_env import UnrealLunarLanderEnv
-from wrappers import NormalizeObservation
+from gymanisum.wrappers import NormalizeObservation
 
 class TestProcess:
     def __init__(self, input_state, output_action):
