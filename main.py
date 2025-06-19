@@ -1,10 +1,13 @@
-import gym
+####import gym
 from tensorboardX import SummaryWriter
 import Config
 from Agent import Agent
 from TestProcess import TestProcess
 from lunar_lander_env import UnrealLunarLanderEnv
-from gymnasium.wrappers import NormalizeObservation
+####from gymnasium.wrappers import NormalizeObservation
+import gymnasium as gym
+from gymnasium.wrappers import NormalizeObservation, RecordEpisodeStatistics
+
 
 # --- The path to your Unreal Engine executable ---
 YOUR_UNREAL_EXE_PATH = r"C:\Users\ADMIN\Desktop\lunar_lander\lunar_lander.exe"
